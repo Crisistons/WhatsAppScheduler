@@ -5,32 +5,43 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 import time
+import schedule
 
 
 def check_class_presence(message, class_name, seconds):
     print(message)
     try:
-        WebDriverWait(driver, seconds).until(ec.presence_of_element_located((By.CLASS_NAME, class_name)))
+        WebDriverWait(driver, seconds).until(
+            ec.presence_of_element_located((By.CLASS_NAME, class_name))
+        )
     except TimeoutException:
         print("Timeout")
 
 
 def search_for_contact():
-    textbox = driver.find_element_by_xpath("//div[@class='_3FRCZ copyable-text selectable-text']")
+    textbox = driver.find_element_by_xpath(
+        "//div[@class='_3FRCZ copyable-text selectable-text']"
+    )
     textbox.send_keys(contact_name)
 
 
 def send_message():
     contact_box = driver.find_element_by_xpath("//div[@class='_2kHpK']")
     contact_box.click()
-    contact_text = driver.find_element_by_xpath('//*[@id="main"]/footer/div[1]/div[2]/div/div[2]')
-    contact_text.send_keys("lol")
+    contact_text = driver.find_element_by_xpath(
+        '//*[@id="main"]/footer/div[1]/div[2]/div/div[2]'
+    )
+    contact_text.send_keys(message_input)
 
 
 if __name__ == "__main__":
     path = input("Chromedriver path (leave empty if it is in the same directory): ")
     contact_name = input("Contact name: ")
-    if path == '':
+    hour_input = input("Hour: ")
+    minute_input = input("Minute: ")
+    message_input = input("Message: ")
+
+    if path == "":
         driver = webdriver.Chrome()
     else:
         driver = webdriver.Chrome(executable_path=path)
@@ -41,5 +52,6 @@ if __name__ == "__main__":
     # Checks if the user has scanned the QR code by checking the 'search contacts' label in the logged in WhatsApp
     search_for_contact()
     send_message()
+    schedule.every().day.at(hour_input + ":" + minute_input)
     time.sleep(5)
     driver.quit()
